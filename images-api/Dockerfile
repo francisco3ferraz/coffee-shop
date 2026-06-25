@@ -25,4 +25,6 @@ COPY --from=build /out/images-api /images-api
 
 EXPOSE 9091
 
+USER 65532:65532
+
 ENTRYPOINT ["/images-api"]

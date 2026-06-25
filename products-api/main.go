@@ -45,6 +45,7 @@ func main() {
 
 	// handlers for API
 	getRequest := serveMux.Methods(http.MethodGet).Subrouter()
+	getRequest.HandleFunc("/healthz", healthz)
 	getRequest.HandleFunc("/products", productsHandler.ListAll).Queries("currency", "{[A-Z]{3}}")
 	getRequest.HandleFunc("/products", productsHandler.ListAll)
 
@@ -108,4 +109,8 @@ func getEnv(key, fallback string) string {
 	}
 
 	return value
+}
+
+func healthz(rw http.ResponseWriter, r *http.Request) {
+	rw.WriteHeader(http.StatusOK)
 }

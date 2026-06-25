@@ -10,6 +10,8 @@ import (
 
 	hclog "github.com/hashicorp/go-hclog"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 )
 
@@ -26,6 +28,9 @@ func main() {
 	c := server.NewCurrency(rates, log)
 
 	protos.RegisterCurrencyServer(gs, c)
+	healthServer := health.NewServer()
+	healthServer.SetServingStatus("", healthpb.HealthCheckResponse_SERVING)
+	healthpb.RegisterHealthServer(gs, healthServer)
 
 	reflection.Register(gs)
 

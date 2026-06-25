@@ -32,4 +32,6 @@ COPY products-api/swagger.yaml /swagger.yaml
 
 EXPOSE 9090
 
+USER 65532:65532
+
 ENTRYPOINT ["/products-api"]

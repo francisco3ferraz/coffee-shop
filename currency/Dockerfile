@@ -28,4 +28,6 @@ COPY --from=build /out/currency /currency
 
 EXPOSE 9092
 
+USER 65532:65532
+
 ENTRYPOINT ["/currency"]

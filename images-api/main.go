@@ -52,6 +52,7 @@ func main() {
 
 	// get files
 	gh := sm.Methods(http.MethodGet).Subrouter()
+	gh.HandleFunc("/healthz", healthz)
 	gh.Handle(
 		"/images/{id:[0-9]+}/{filename:[a-zA-Z]+\\.[a-z]{3}}",
 		http.StripPrefix("/images/", http.FileServer(http.Dir("./imagestore"))),
@@ -100,4 +101,8 @@ func getEnv(key, fallback string) string {
 	}
 
 	return value
+}
+
+func healthz(rw http.ResponseWriter, r *http.Request) {
+	rw.WriteHeader(http.StatusOK)
 }

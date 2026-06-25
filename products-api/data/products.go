@@ -42,7 +42,7 @@ type Product struct {
 	//
 	// required: true
 	// pattern: [a-z]+-[a-z]+-[a-z]+
-	SKU string `json:"sku" validate:"sku"`
+	SKU string `json:"sku" validate:"required,sku"`
 }
 
 // Products defines a slice of Product
@@ -84,7 +84,7 @@ func (p *ProductsDB) GetProducts(currency string) (Products, error) {
 // If a product is not found this function returns a ProductNotFound error
 func (p *ProductsDB) GetProductByID(id int, currency string) (*Product, error) {
 	i := findIndexByProductID(id)
-	if id == -1 {
+	if i == -1 {
 		return nil, ErrProductNotFound
 	}
 
@@ -153,12 +153,21 @@ func findIndexByProductID(id int) int {
 }
 
 func (p *ProductsDB) getRate(destination string) (float64, error) {
+	destinationID, ok := protos.Currencies_value[destination]
+	if !ok {
+		return 0, fmt.Errorf("Rate not found for currency %s", destination)
+	}
+
 	rr := &protos.RateRequest{
 		Base:        protos.Currencies(protos.Currencies_value["EUR"]),
-		Destination: protos.Currencies(protos.Currencies_value[destination]),
+		Destination: protos.Currencies(destinationID),
 	}
 
 	resp, err := p.currency.GetRate(context.Background(), rr)
+	if err != nil {
+		return 0, err
+	}
+
 	return resp.Rate, err
 }
 

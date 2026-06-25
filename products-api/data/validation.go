@@ -45,12 +45,12 @@ func NewValidation() *Validation {
 }
 
 func (v *Validation) Validate(i interface{}) ValidationErrors {
-	errs := v.validate.Struct(i).(validator.ValidationErrors)
-
-	if len(errs) == 0 {
+	err := v.validate.Struct(i)
+	if err == nil {
 		return nil
 	}
 
+	errs := err.(validator.ValidationErrors)
 	var returnErrs []ValidationError
 	for _, err := range errs {
 		ve := ValidationError{err.(validator.FieldError)}
@@ -62,12 +62,6 @@ func (v *Validation) Validate(i interface{}) ValidationErrors {
 
 // validateSKU
 func validateSKU(fl validator.FieldLevel) bool {
-	re := regexp.MustCompile(`[a-z]+-[a-z]+-[a-z]+`)
-	sku := re.FindAllString(fl.Field().String(), -1)
-
-	if len(sku) == 1 {
-		return true
-	}
-
-	return false
+	re := regexp.MustCompile(`^[a-z]+-[a-z]+-[a-z]+$`)
+	return re.MatchString(fl.Field().String())
 }

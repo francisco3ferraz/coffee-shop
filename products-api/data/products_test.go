@@ -10,6 +10,7 @@ import (
 func TestProductMissingNameReturnsErr(t *testing.T) {
 	p := Product{
 		Price: 1.22,
+		SKU:   "abc-efg-hij",
 	}
 
 	v := NewValidation()
@@ -21,6 +22,7 @@ func TestProductMissingPriceReturnsErr(t *testing.T) {
 	p := Product{
 		Name:  "abc",
 		Price: -1,
+		SKU:   "abc-efg-hij",
 	}
 
 	v := NewValidation()
@@ -49,7 +51,7 @@ func TestValidProductDoesNOTReturnsErr(t *testing.T) {
 
 	v := NewValidation()
 	err := v.Validate(p)
-	assert.Len(t, err, 1)
+	assert.Len(t, err, 0)
 }
 
 func TestProductsToJSON(t *testing.T) {

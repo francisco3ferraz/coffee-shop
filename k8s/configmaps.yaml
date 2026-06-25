@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coffee-shop-config
+data:
+  PRODUCTS_BIND_ADDR: "0.0.0.0:9090"
+  IMAGES_BIND_ADDR: "0.0.0.0:9091"
+  CURRENCY_BIND_ADDR: ":9092"
+  CURRENCY_ADDR: "currency-service:9092"
+  IMAGE_STORE_PATH: "/imagestore"
+

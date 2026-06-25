@@ -1,0 +1,10 @@
+.git
+.agents
+.codex
+**/.DS_Store
+**/tmp
+**/coverage
+**/dist
+**/build
+**/*.test
+

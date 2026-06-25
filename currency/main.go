@@ -29,11 +29,22 @@ func main() {
 
 	reflection.Register(gs)
 
-	l, err := net.Listen("tcp", ":9092")
+	bindAddr := getEnv("CURRENCY_BIND_ADDR", ":9092")
+	l, err := net.Listen("tcp", bindAddr)
 	if err != nil {
 		log.Error("Unable to listen", "error", err)
 		os.Exit(1)
 	}
 
+	log.Info("Starting server", "bind_address", bindAddr)
 	gs.Serve(l)
+}
+
+func getEnv(key, fallback string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		return fallback
+	}
+
+	return value
 }

@@ -24,7 +24,9 @@ func main() {
 	l := hclog.Default()
 	validation := data.NewValidation()
 
-	conn, err := grpc.Dial("localhost:9092", grpc.WithInsecure())
+	currencyAddr := getEnv("CURRENCY_ADDR", "localhost:9092")
+	bindAddr := getEnv("PRODUCTS_BIND_ADDR", "127.0.0.1:9090")
+	conn, err := grpc.Dial(currencyAddr, grpc.WithInsecure())
 	if err != nil {
 		panic(err)
 	}
@@ -70,7 +72,7 @@ func main() {
 
 	// create a new server
 	s := http.Server{
-		Addr:         "127.0.0.1:9090",
+		Addr:         bindAddr,
 		Handler:      corsHandler(serveMux),
 		ErrorLog:     l.StandardLogger(&hclog.StandardLoggerOptions{}),
 		ReadTimeout:  5 * time.Second,
@@ -79,7 +81,7 @@ func main() {
 	}
 
 	go func() {
-		l.Info("Starting server on port 9090")
+		l.Info("Starting server", "bind_address", bindAddr)
 
 		err := s.ListenAndServe()
 		if err != nil {
@@ -97,4 +99,13 @@ func main() {
 
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	s.Shutdown(ctx)
+}
+
+func getEnv(key, fallback string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		return fallback
+	}
+
+	return value
 }

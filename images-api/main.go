@@ -25,10 +25,12 @@ func main() {
 
 	// create a logger for the server from the default logger
 	sl := l.StandardLogger(&hclog.StandardLoggerOptions{InferLevels: true})
+	bindAddr := getEnv("IMAGES_BIND_ADDR", "127.0.0.1:9091")
+	storePath := getEnv("IMAGE_STORE_PATH", "./imagestore")
 
 	// create the storage class, use local storage
 	// max filesize 5MB
-	stor, err := files.NewLocal("./imagestore", 1024*1000*5)
+	stor, err := files.NewLocal(storePath, 1024*1000*5)
 	if err != nil {
 		l.Error("Unable to create storage", "error", err)
 		os.Exit(1)
@@ -58,7 +60,7 @@ func main() {
 
 	// create a new server
 	s := http.Server{
-		Addr:         "127.0.0.1:9091",  // configure the bind address
+		Addr:         bindAddr,          // configure the bind address
 		Handler:      ch(sm),            // set the default handler
 		ErrorLog:     sl,                // the logger for the server
 		ReadTimeout:  5 * time.Second,   // max time to read request from the client
@@ -68,7 +70,7 @@ func main() {
 
 	// start the server
 	go func() {
-		l.Info("Starting server", "bind_address", "127.0.0.1:9091")
+		l.Info("Starting server", "bind_address", bindAddr, "store_path", storePath)
 
 		err := s.ListenAndServe()
 		if err != nil {
@@ -89,4 +91,13 @@ func main() {
 	// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	s.Shutdown(ctx)
+}
+
+func getEnv(key, fallback string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		return fallback
+	}
+
+	return value
 }

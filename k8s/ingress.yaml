@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: coffee-shop
+  namespace: coffee-shop
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: coffee-shop.local
+      http:
+        paths:
+          - path: /products
+            pathType: Prefix
+            backend:
+              service:
+                name: products-api-service
+                port:
+                  name: http
+          - path: /images
+            pathType: Prefix
+            backend:
+              service:
+                name: images-api-service
+                port:
+                  name: http
+

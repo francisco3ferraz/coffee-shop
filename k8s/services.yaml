@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: products-api-service
+  namespace: coffee-shop
 spec:
   type: ClusterIP
   selector:
@@ -15,6 +16,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: images-api-service
+  namespace: coffee-shop
 spec:
   type: ClusterIP
   selector:
@@ -28,6 +30,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: currency-service
+  namespace: coffee-shop
 spec:
   type: ClusterIP
   selector:
@@ -36,4 +39,3 @@ spec:
     - name: grpc
       port: 9092
       targetPort: grpc
-
